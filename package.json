@@ -1,0 +1,18 @@
+{
+  "name": "com.postegames.mathutils",
+  "version": "1.0.0",
+  "displayName": "PEGLIB - Math Utils",
+  "description": "A collection of helpful math functions for common problems in games.",
+  "unity": "2022.2",
+  "keywords": [
+    "math",
+    "util",
+    "utility",
+    "library"
+  ],
+  "author": {
+    "name": "Sluggy",
+    "email": "jcsluggy@gmail.com",
+    "url": "http:/postegames.com"
+  }
+}
