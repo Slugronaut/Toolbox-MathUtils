@@ -833,7 +833,7 @@ namespace Toolbox.Math
         /// <returns></returns>
         public static Vector3 ForwardSpaceOffset(Vector3 pos, Vector3 dir, Vector3 offset)
         {
-            return pos + Vector3.Cross(dir, new Vector3(0, offset.x, 0)) +
+            return pos + Vector3.Cross(dir, new Vector3(0, -offset.x, 0)) +
                     new Vector3(0, offset.y, 0) +
                     (dir * offset.z);
         }
