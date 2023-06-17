@@ -2477,6 +2477,8 @@ namespace Toolbox.Math
     public class WeightedRenderer : WeightedValue<Renderer> { }
     [Serializable]
     public class WeightedRigidbody: WeightedValue<Rigidbody> { }
+    [System.Serializable]
+    public class WeightedColor : WeightedValue<Color> { }
 
 
     /// <summary>
