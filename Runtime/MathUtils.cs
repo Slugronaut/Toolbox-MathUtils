@@ -2644,5 +2644,39 @@ namespace Toolbox.Math
         }
     }
 
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public static class DataUtils
+    {
+
+        /// <summary>
+        /// Encodes a single integer into a Vector3.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static Vector3 EncodeFloat3(int index)
+        {
+            float x = (float)(index & 1023) / 1023.0f;
+            float y = (float)((index >> 10) & 1023) / 1023.0f;
+            float z = (float)((index >> 20) & 511) / 511.0f;
+            return new Vector3(x, y, z);
+        }
+
+        /// <summary>
+        /// Decodes a Vector3 into a previously encoded integer.
+        /// </summary>
+        /// <param name="float3"></param>
+        /// <returns></returns>
+        public static int DecodeFloat3(Vector3 float3)
+        {
+            int x = (int)(float3.x * 1023);
+            int y = (int)(float3.y * 1023) << 10;
+            int z = (int)(float3.z * 511) << 20;
+            return x | y | z;
+        }
+    }
 }
  
