@@ -11,7 +11,7 @@ using System.Linq;
 using System.Collections;
 
 
-namespace Toolbox
+namespace Peg.Lib
 {
     /// <summary>
     /// Timing utility class.
@@ -36,7 +36,7 @@ namespace Toolbox
     }
 }
 
-namespace Toolbox.Math
+namespace Peg.Lib
 {
     /// <summary>
     /// Common math tools for Lerping, Vector manipulation, collision detection, and physics integration.
@@ -139,7 +139,7 @@ namespace Toolbox.Math
         static public float EvaluateCurveRange(float input, float min, float max, AnimationCurve curve)
         {
             float diff = max - min;
-            return (curve.Evaluate(((input - min) / diff)) * diff) + min;
+            return curve.Evaluate((input - min) / diff) * diff + min;
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Toolbox.Math
         {
             var scale = curve.Evaluate(percent);
             float diff = max - min;
-            return min + (diff * scale);
+            return min + diff * scale;
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace Toolbox.Math
         {
             float outRange = outMax - outMin;
             float inNorm = input / (inMax - inMin);
-            return (inNorm * outRange) + outMin;
+            return inNorm * outRange + outMin;
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace Toolbox.Math
 
             float outRange = omx - omn;
             float inNorm = input / (imx - imn);
-            return (inNorm * ((outMax > outMin) ? outRange : 1.0f/outRange) ) + omn;
+            return inNorm * (outMax > outMin ? outRange : 1.0f / outRange) + omn;
         }
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace Toolbox.Math
         {
             float r = inMax - inMin;
             float norm = input / r;
-            return (norm * (outMax - outMin)) + outMin;
+            return norm * (outMax - outMin) + outMin;
         }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace Toolbox.Math
         private float SimpleLerp(float last, float now, float alpha)
         {
             //alpha * black + (1 - alpha) * red
-            return (alpha * now) + ((1 - alpha) * last);
+            return alpha * now + (1 - alpha) * last;
         }
 
         /**
@@ -315,7 +315,7 @@ namespace Toolbox.Math
             {
                 float range = target - start;
                 float percent = timeSinceStart / duration;
-                value = start + (range * percent);
+                value = start + range * percent;
             }
             else if (timeSinceStart >= duration)
             {
@@ -342,13 +342,13 @@ namespace Toolbox.Math
                 float percent = timeSinceStart / (duration * 0.5f);
                 if (percent < 1.0f)
                 {
-                    value = start + ((range * 0.5f) * percent * percent * percent);
+                    value = start + range * 0.5f * percent * percent * percent;
                 }
                 else
                 {
                     float shiftedPercent = percent - 2.0f;
-                    value = start + ((range * 0.5f)
-                            * ((shiftedPercent * shiftedPercent * shiftedPercent) + 2.0f));
+                    value = start + range * 0.5f
+                            * (shiftedPercent * shiftedPercent * shiftedPercent + 2.0f);
                 }
             }
             else if (timeSinceStart >= duration)
@@ -390,7 +390,7 @@ namespace Toolbox.Math
                 return pastPosition;
             if (!(speed > 0))
                 speed = 0.0001f;
-            
+
             float t = Time.deltaTime * speed;
             float v = (targetPosition - pastTargetPosition) / t;
             float f = pastPosition - pastTargetPosition + v;
@@ -434,7 +434,7 @@ namespace Toolbox.Math
 
             bool result = Physics.SphereCast(origin, radius, dir, out RaycastHit info, dist, mask, triggerInteraction);
 
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             if (debug)
             {
                 if (result)
@@ -443,9 +443,9 @@ namespace Toolbox.Math
                 return !result;
             }
             else return !result;
-            #else
+#else
             return !result;
-            #endif
+#endif
         }
 
         /// <summary>
@@ -491,7 +491,7 @@ namespace Toolbox.Math
                 var rends = gameObject.GetComponentsInChildren<Renderer>(false);
                 foreach (Renderer r in rends)
                 {
-                    if(colliderLayers.ContainsLayerIndex(r.gameObject.layer))
+                    if (colliderLayers.ContainsLayerIndex(r.gameObject.layer))
                         b.Encapsulate(r.bounds);
                 }
             }
@@ -501,7 +501,7 @@ namespace Toolbox.Math
                 var cols = gameObject.GetComponentsInChildren<Collider>(false);
                 foreach (Collider c in cols)
                 {
-                    if(colliderLayers.ContainsLayerIndex(c.gameObject.layer))
+                    if (colliderLayers.ContainsLayerIndex(c.gameObject.layer))
                         b.Encapsulate(c.bounds);
                 }
             }
@@ -511,7 +511,7 @@ namespace Toolbox.Math
                 var cols = gameObject.GetComponentsInChildren<Collider2D>(false);
                 foreach (Collider2D c in cols)
                 {
-                    if(colliderLayers.ContainsLayerIndex(c.gameObject.layer))
+                    if (colliderLayers.ContainsLayerIndex(c.gameObject.layer))
                         b.Encapsulate(c.bounds);
                 }
             }
@@ -527,19 +527,19 @@ namespace Toolbox.Math
             Bounds b = new Bounds(Vector3.zero, Vector3.zero);
             if (includeRenders)
             {
-                foreach (Renderer r in GameObject.FindObjectsOfType(typeof(Renderer)))
+                foreach (Renderer r in UnityEngine.Object.FindObjectsOfType(typeof(Renderer)))
                     b.Encapsulate(r.bounds);
             }
 
             if (includeColliders)
             {
-                foreach (Collider c in GameObject.FindObjectsOfType(typeof(Collider)))
+                foreach (Collider c in UnityEngine.Object.FindObjectsOfType(typeof(Collider)))
                     b.Encapsulate(c.bounds);
             }
 
             if (includeColliders2D)
             {
-                foreach (Collider2D c in GameObject.FindObjectsOfType(typeof(Collider2D)))
+                foreach (Collider2D c in UnityEngine.Object.FindObjectsOfType(typeof(Collider2D)))
                     b.Encapsulate(c.bounds);
             }
             return b;
@@ -592,7 +592,7 @@ namespace Toolbox.Math
 
             float a = Vector2.Dot(dir, dir);
             float b = 2 * Vector2.Dot(fuc, dir);
-            float c = Vector2.Dot(fuc, fuc) - (circleRadius * circleRadius);
+            float c = Vector2.Dot(fuc, fuc) - circleRadius * circleRadius;
 
             float disc = b * b - 4 * a * c;
             if (disc < 0.0f) return false;
@@ -656,7 +656,7 @@ namespace Toolbox.Math
             {
                 //Vector3 surface = nearestPoint;
                 Vector2 proj = (Vector2)nearestPoint - (Vector2)point;
-                nearestPoint = ((Vector2)nearestPoint + ((proj.normalized) * offset));
+                nearestPoint = (Vector2)nearestPoint + proj.normalized * offset;
                 //Debug.DrawLine(hit.point, surface, Color.green, 0.25f);
                 //Debug.DrawLine(surface, nearestPoint, Color.magenta, 0.25f);
             }
@@ -684,7 +684,7 @@ namespace Toolbox.Math
         /// <returns></returns>
         public static bool HasLos(Vector3 start, Vector3 end, float radius, float maxDist, LayerMask mask)
         {
-            var dir = (end - start);
+            var dir = end - start;
             maxDist = Mathf.Min(maxDist, dir.magnitude);
 
             if (radius == 0)
@@ -734,8 +734,8 @@ namespace Toolbox.Math
 
             float left = Vector2.Angle(targetPos - agentPos, Vector2.left);
             float right = Vector2.Angle(targetPos - agentPos, Vector2.right);
-            return (left < viewAngle && left > 0) ||
-                   (right < viewAngle && right > 0);
+            return left < viewAngle && left > 0 ||
+                   right < viewAngle && right > 0;
         }
 
         /// <summary>
@@ -835,7 +835,7 @@ namespace Toolbox.Math
         {
             return pos + Vector3.Cross(dir, new Vector3(0, -offset.x, 0)) +
                     new Vector3(0, offset.y, 0) +
-                    (dir * offset.z);
+                    dir * offset.z;
         }
 
         /// <summary>
@@ -847,7 +847,7 @@ namespace Toolbox.Math
         /// <returns></returns>
         public static bool IsLeft(Vector2 start, Vector2 end, Vector2 p)
         {
-            return ((end.x - start.x) * (p.y - start.y) - (end.y - start.y) * (p.x - start.x)) > 0;
+            return (end.x - start.x) * (p.y - start.y) - (end.y - start.y) * (p.x - start.x) > 0;
         }
 
         public enum Side
@@ -901,8 +901,8 @@ namespace Toolbox.Math
             float cos = Mathf.Cos(angle);
             float tx = v.x;
             float ty = v.y;
-            return new Vector2((cos * tx) - (sin * ty),
-                               (cos * ty) + (sin * tx));
+            return new Vector2(cos * tx - sin * ty,
+                               cos * ty + sin * tx);
         }
 
         /// <summary>
@@ -954,7 +954,7 @@ namespace Toolbox.Math
         {
             //Vector3 endTowardBegin = _arcEnd - _arcBegin;
             float radius = (arcStart - circleCenter).magnitude;
-            Vector3 surfacePoint = circleCenter - ((circleCenter - testPoint).normalized * radius);
+            Vector3 surfacePoint = circleCenter - (circleCenter - testPoint).normalized * radius;
 
             //if (Vector3.Dot(Perpendicular(endTowardBegin), surfacePoint - _arcBegin) > 0)
             if (Vector3.Dot(Vector3.Cross(arcEnd, arcStart).normalized, surfacePoint - arcStart) > 0)
@@ -1057,7 +1057,7 @@ namespace Toolbox.Math
         /// <param name="dt">Dt.</param>
         public static void Verlet(float dt, ref Vector2 pos, ref Vector2 vel)
         {
-            Vector2 delta = (vel * dt) + 0.5f * (Physics2D.gravity * dt * dt);
+            Vector2 delta = vel * dt + 0.5f * (Physics2D.gravity * dt * dt);
             pos += delta;
             vel += Physics2D.gravity * dt;
             //return new Vector2[] { pos, vel };
@@ -1073,7 +1073,7 @@ namespace Toolbox.Math
         /// <param name="vel"></param>
         public static void Verlet(float dt, Vector3 gravity, ref Vector3 pos, ref Vector3 vel)
         {
-            Vector3 delta = (vel * dt) + 0.5f * (gravity * dt * dt);
+            Vector3 delta = vel * dt + 0.5f * (gravity * dt * dt);
             pos += delta;
             vel += gravity * dt;
         }
@@ -1085,7 +1085,7 @@ namespace Toolbox.Math
         /// <param name="dt">Dt.</param>
         public static void Verlet(float dt, float gravity, ref float pos, ref float vel)
         {
-            float delta = (vel * dt) + 0.5f * (gravity * dt * dt);
+            float delta = vel * dt + 0.5f * (gravity * dt * dt);
             pos += delta;
             vel += gravity * dt;
         }
@@ -1185,7 +1185,7 @@ namespace Toolbox.Math
         public static Vector3 GetPointOnUnitSphereCap(Quaternion targetDir, float angle)
         {
             var angledInRad = UnityEngine.Random.Range(0.0f, angle) * Mathf.Deg2Rad;
-            var PointOnCircle = (UnityEngine.Random.insideUnitCircle.normalized) * Mathf.Sin(angledInRad);
+            var PointOnCircle = UnityEngine.Random.insideUnitCircle.normalized * Mathf.Sin(angledInRad);
             var vec = new Vector3(PointOnCircle.x, PointOnCircle.y, Mathf.Cos(angledInRad));
             return targetDir * vec;
         }
@@ -1322,7 +1322,7 @@ namespace Toolbox.Math
             float bestMatchMag = float.MaxValue;
             for (int i = 0; i < trans.Count; i++)
             {
-                float mag = (trans[i].transform.position - point).sqrMagnitude;
+                float mag = (trans[i].position - point).sqrMagnitude;
                 if (mag <= bestMatchMag)
                 {
                     bestMatchMag = mag;
@@ -1332,7 +1332,53 @@ namespace Toolbox.Math
 
             return trans[bestIndex];
         }
-        
+
+        /// <summary>
+        /// Returns the transform in the list that is closest to the given point.
+        /// </summary>
+        public static Transform GetClosest<T>(List<T> beh, Vector3 point) where T : Behaviour
+        {
+            Assert.IsNotNull(beh);
+            Assert.IsTrue(beh.Count > 0);
+
+            int bestIndex = 0;
+            float bestMatchMag = float.MaxValue;
+            for (int i = 0; i < beh.Count; i++)
+            {
+                float mag = (beh[i].transform.position - point).sqrMagnitude;
+                if (mag <= bestMatchMag)
+                {
+                    bestMatchMag = mag;
+                    bestIndex = i;
+                }
+            }
+
+            return beh[bestIndex].transform;
+        }
+
+        /// <summary>
+        /// Returns the transform in the list that is closest to the given point.
+        /// </summary>
+        public static Transform GetClosest(List<GameObject> go, Vector3 point)
+        {
+            Assert.IsNotNull(go);
+            Assert.IsTrue(go.Count > 0);
+
+            int bestIndex = 0;
+            float bestMatchMag = float.MaxValue;
+            for (int i = 0; i < go.Count; i++)
+            {
+                float mag = (go[i].transform.position - point).sqrMagnitude;
+                if (mag <= bestMatchMag)
+                {
+                    bestMatchMag = mag;
+                    bestIndex = i;
+                }
+            }
+
+            return go[bestIndex].transform;
+        }
+
         /// <summary>
         /// Returns the point in the list that is closest to the given point.
         /// </summary>
@@ -1441,7 +1487,7 @@ namespace Toolbox.Math
             Assert.IsTrue(trans.Count > 0);
 
             int bestIndex = 0;
-            float bestMatchMag =  -float.MaxValue;
+            float bestMatchMag = -float.MaxValue;
             for (int i = 0; i < trans.Count; i++)
             {
                 float mag = (trans[i].transform.position - point).sqrMagnitude;
@@ -1585,7 +1631,7 @@ namespace Toolbox.Math
 
             min = new Vector3(xMin, yMin, zMin);
             max = new Vector3(xMax, yMax, zMax);
-            return min + ((max - min) * 0.5f);
+            return min + (max - min) * 0.5f;
         }
 
         static List<Vector4> SharedPoints = new List<Vector4>(20);
@@ -1599,10 +1645,10 @@ namespace Toolbox.Math
             Assert.IsNotNull(trans);
             Assert.IsTrue(trans.Count > 0);
             Assert.IsTrue(trans.Count == weights.Count);
-            
+
             int count = trans.Count;
             SharedPoints.Clear();
-            for(int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 var pos = trans[i].position;
                 SharedPoints.Add(new Vector4(pos.x, pos.y, pos.z, weights[i]));
@@ -1621,7 +1667,7 @@ namespace Toolbox.Math
             Assert.IsNotNull(trans);
             Assert.IsTrue(trans.Count > 0);
             Assert.IsTrue(trans.Count == weights.Count);
-            
+
             int count = trans.Count;
             SharedPoints.Clear();
             for (int i = 0; i < count; i++)
@@ -1719,12 +1765,12 @@ namespace Toolbox.Math
             float diff;
             Vector4 p;
             Vector4 composite = trueCentroid;
-            for(int i = 0; i < len; i++)
+            for (int i = 0; i < len; i++)
             {
                 p = points[i];
                 diff = p.w / maxPull;
                 Vector4 vec = p - trueCentroid;
-                composite += (vec * diff);
+                composite += vec * diff;
             }
 
             return composite;
@@ -1754,7 +1800,7 @@ namespace Toolbox.Math
                 p = points[i];
                 diff = p.w / maxPull;
                 Vector4 vec = p - trueCentroid;
-                composite += (vec * diff);
+                composite += vec * diff;
             }
 
             return composite;
@@ -1769,19 +1815,19 @@ namespace Toolbox.Math
         /// <param name="limitWeight"></param>
         private static void TrySetExtent(Vector3 test, Vector4 point, ref Vector3 limit, ref Vector3 limitWeight)
         {
-            if (test.x < 0 || (test.x < float.Epsilon && point.w > limitWeight.x))
+            if (test.x < 0 || test.x < float.Epsilon && point.w > limitWeight.x)
             {
                 limit.x = point.x;
                 limitWeight.x = point.w;
             }
 
-            if (test.y < 0 || (test.y < float.Epsilon && point.w > limitWeight.y))
+            if (test.y < 0 || test.y < float.Epsilon && point.w > limitWeight.y)
             {
                 limit.y = point.y;
                 limitWeight.y = point.w;
             }
 
-            if (test.z < 0 || (test.z < float.Epsilon && point.w > limitWeight.z))
+            if (test.z < 0 || test.z < float.Epsilon && point.w > limitWeight.z)
             {
                 limit.z = point.z;
                 limitWeight.z = point.w;
@@ -1803,7 +1849,37 @@ namespace Toolbox.Math
                 TempVec3s.Add(trans[i].position);
             for (int i = 0; i < bodies.Count; i++)
                 TempVec3s.Add(bodies[i].position);
-            return MathUtils.GetCentroid(TempVec3s);
+            return GetCentroid(TempVec3s);
+        }
+
+        /// <summary>
+        /// Returns the geometric center of a collection of Transforms.
+        /// </summary>
+        /// <param name="trans"></param>
+        /// <param name="bodies"></param>
+        /// <returns></returns>
+        public static Vector3 GetCentroidTrans(List<Transform> trans)
+        {
+            //var TempVec3s = SharedArrayFactory.RequestTempList<Vector3>();
+            TempVec3s.Clear();
+            for (int i = 0; i < trans.Count; i++)
+                TempVec3s.Add(trans[i].position);
+            return GetCentroid(TempVec3s);
+        }
+
+        /// <summary>
+        /// Returns the geometric center of a collection of Transforms.
+        /// </summary>
+        /// <param name="trans"></param>
+        /// <param name="bodies"></param>
+        /// <returns></returns>
+        public static Vector3 GetCentroidBody(List<Rigidbody> bodies)
+        {
+            //var TempVec3s = SharedArrayFactory.RequestTempList<Vector3>();
+            TempVec3s.Clear();
+            for (int i = 0; i < bodies.Count; i++)
+                TempVec3s.Add(bodies[i].position);
+            return GetCentroid(TempVec3s);
         }
 
         /// <summary>
@@ -1841,7 +1917,7 @@ namespace Toolbox.Math
 
             min = new Vector3(xMin, yMin, zMin);
             max = new Vector3(xMax, yMax, zMax);
-            return min + ((max - min) * 0.5f);
+            return min + (max - min) * 0.5f;
         }
 
         /// <summary>
@@ -1879,7 +1955,7 @@ namespace Toolbox.Math
 
             min = new Vector3(xMin, yMin, zMin);
             max = new Vector3(xMax, yMax, zMax);
-            return min + ((max - min) * 0.5f);
+            return min + (max - min) * 0.5f;
         }
 
         /// <summary>
@@ -1916,7 +1992,7 @@ namespace Toolbox.Math
 
             min = new Vector3(xMin, yMin, zMin);
             max = new Vector3(xMax, yMax, zMax);
-            return min + ((max - min) * 0.5f);
+            return min + (max - min) * 0.5f;
         }
 
         /// <summary>
@@ -1924,7 +2000,7 @@ namespace Toolbox.Math
         /// </summary>
         /// <param name="points"></param>
         /// <returns></returns>
-        public static Vector3 GetCentroid(Vector4[]points)
+        public static Vector3 GetCentroid(Vector4[] points)
         {
             Assert.IsNotNull(points);
             Assert.IsTrue(points.Length > 0);
@@ -1953,7 +2029,7 @@ namespace Toolbox.Math
 
             min = new Vector3(xMin, yMin, zMin);
             max = new Vector3(xMax, yMax, zMax);
-            return min + ((max - min) * 0.5f);
+            return min + (max - min) * 0.5f;
         }
 
         /// <summary>
@@ -1990,7 +2066,7 @@ namespace Toolbox.Math
 
             min = new Vector3(xMin, yMin, zMin);
             max = new Vector3(xMax, yMax, zMax);
-            return min + ((max - min) * 0.5f);
+            return min + (max - min) * 0.5f;
         }
 
         /// <summary>
@@ -2028,7 +2104,7 @@ namespace Toolbox.Math
 
             min = new Vector3(xMin, yMin, zMin);
             max = new Vector3(xMax, yMax, zMax);
-            return min + ((max - min) * 0.5f);
+            return min + (max - min) * 0.5f;
         }
 
         /// <summary>
@@ -2086,7 +2162,7 @@ namespace Toolbox.Math
             if (vel.sqrMagnitude > 0.01f)
             {
                 if (type == MovementTypes.Othagonal)
-                    return (Quaternion.AngleAxis(faceTarget.eulerAngles.y, Vector3.up) * vel);
+                    return Quaternion.AngleAxis(faceTarget.eulerAngles.y, Vector3.up) * vel;
                 else if (type == MovementTypes.Oblique)
                 {
                     //this is trickier - we need rotate vertical motion and avoid rotating horizontal
@@ -2188,7 +2264,7 @@ namespace Toolbox.Math
             for (var i = count - 1; i >= 0; i--)
             {
                 var r = rng != null ? (float)rng.NextDouble() : UnityEngine.Random.value;
-                var j = (int)Mathf.Floor(r * (i+1));
+                var j = (int)Mathf.Floor(r * (i + 1));
                 listOut[i] = listIn[j];
                 listOut[j] = listIn[i];
             }
@@ -2221,13 +2297,13 @@ namespace Toolbox.Math
             for (var i = count - 1; i >= 0; i--)
             {
                 var r = rng != null ? (float)rng.NextDouble() : UnityEngine.Random.value;
-                var j = (int)Mathf.Floor(r * (i+1));
+                var j = (int)Mathf.Floor(r * (i + 1));
                 listOut[i] = listIn[j];
                 listOut[j] = listIn[i];
             }
         }
 
-        
+
     }
 
 
@@ -2284,7 +2360,7 @@ namespace Toolbox.Math
             var listOut = new TSource[listIn.Length];
             MathUtils.Shuffle(listIn, ref listOut, rng);
 
-            for(int i = 0; i < listIn.Length; i++)
+            for (int i = 0; i < listIn.Length; i++)
                 stackOut.Push(listOut[0]);
             return stackOut;
         }
@@ -2315,7 +2391,7 @@ namespace Toolbox.Math
         }
     }
 
-    
+
     /// <summary>
     /// 
     /// </summary>
@@ -2331,7 +2407,7 @@ namespace Toolbox.Math
         {
             Assert.IsTrue(layerIndex >= 0);
             Assert.IsTrue(layerIndex < 32);
-            return (mask.value & (1 << layerIndex)) != 0;
+            return (mask.value & 1 << layerIndex) != 0;
         }
 
         /// <summary>
@@ -2350,7 +2426,7 @@ namespace Toolbox.Math
             {
                 Assert.IsTrue(layerIndex[i] >= 0);
                 Assert.IsTrue(layerIndex[i] < 32);
-                value |= (1 << layerIndex[i]);
+                value |= 1 << layerIndex[i];
             }
             var mask = new LayerMask();
             mask.value = value;
@@ -2365,7 +2441,7 @@ namespace Toolbox.Math
     /// must be derived from it.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [System.Serializable]
+    [Serializable]
     public class WeightedValue<T>
     {
         public T Value;
@@ -2375,19 +2451,19 @@ namespace Toolbox.Math
     /// <summary>
     /// A float value with a weight.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class WeightedFloat : WeightedValue<float> { }
 
     /// <summary>
     /// A float value with a weight.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class WeightedInt : WeightedValue<int> { }
 
     /// <summary>
     /// A float value with a weight.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class WeightedString : WeightedValue<string> { }
 
 
@@ -2418,7 +2494,7 @@ namespace Toolbox.Math
         /// <returns></returns>
         public static T SelectWeightedRandom<T>(this WeightedValue<T>[] array, double weightTotal, System.Random randomizer = null)
         {
-            var r = randomizer == null ? UnityEngine.Random.Range(0, (float)weightTotal) : (randomizer.NextDouble() * weightTotal);
+            var r = randomizer == null ? UnityEngine.Random.Range(0, (float)weightTotal) : randomizer.NextDouble() * weightTotal;
             double tally = r;
             for (int i = 0; i < array.Length; i++)
             {
@@ -2450,9 +2526,9 @@ namespace Toolbox.Math
         /// <returns></returns>
         public static T SelectWeightedRandom<T>(this IEnumerable<WeightedValue<T>> collection, double weightTotal, System.Random randomizer = null)
         {
-            var r = randomizer == null ? UnityEngine.Random.Range(0, (float)weightTotal) : (randomizer.NextDouble() * weightTotal);
+            var r = randomizer == null ? UnityEngine.Random.Range(0, (float)weightTotal) : randomizer.NextDouble() * weightTotal;
             double tally = r;
-            foreach(var element in collection)
+            foreach (var element in collection)
             {
                 tally -= element.Weight;
                 if (tally <= 0) return element.Value;
@@ -2460,12 +2536,12 @@ namespace Toolbox.Math
             throw new UnityException("Weights not calculated correctly. Total: " + weightTotal + "  Random:  " + r + "  Final Tally: " + tally);
         }
     }
-    
+
 
     /// <summary>
     /// A concrete implementation of WeightedValue<T> for GameObjects.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class WeightedGameObject : WeightedValue<GameObject> { }
     [Serializable]
     public class WeightedBehaviour : WeightedValue<Behaviour> { }
@@ -2476,8 +2552,8 @@ namespace Toolbox.Math
     [Serializable]
     public class WeightedRenderer : WeightedValue<Renderer> { }
     [Serializable]
-    public class WeightedRigidbody: WeightedValue<Rigidbody> { }
-    [System.Serializable]
+    public class WeightedRigidbody : WeightedValue<Rigidbody> { }
+    [Serializable]
     public class WeightedColor : WeightedValue<Color> { }
 
 
@@ -2499,7 +2575,7 @@ namespace Toolbox.Math
             throw new UnityException("Not yet implemented.");
         }
     }
-    
+
 
     /// <summary>
     /// 
@@ -2518,7 +2594,7 @@ namespace Toolbox.Math
             transform.localScale = new Vector3(globalScale.x / transform.lossyScale.x, globalScale.y / transform.lossyScale.y, globalScale.z / transform.lossyScale.z);
         }
     }
-    
+
 
     /// <summary>
     /// Extension methods for Unity's Vector3 nd Vector2 methods.
@@ -2546,13 +2622,13 @@ namespace Toolbox.Math
             YZ,
             ZY,
         }
-        
+
         public enum SwizzelMode2D
         {
             XY,
             YX,
         }
-        
+
         public static Vector3 Swizzel(this Vector3 vec, SwizzelMode mode)
         {
             switch (mode)
@@ -2587,7 +2663,7 @@ namespace Toolbox.Math
                     }
             }
         }
-        
+
         public static Vector2 Swizzel(this Vector3 vec, SwizzelMode3DTo2D mode)
         {
             switch (mode)
@@ -2622,7 +2698,7 @@ namespace Toolbox.Math
                     }
             }
         }
-        
+
         public static Vector2 Swizzel(this Vector2 vec, SwizzelMode2D mode)
         {
             switch (mode)
@@ -2659,9 +2735,9 @@ namespace Toolbox.Math
         /// <returns></returns>
         public static Vector3 EncodeFloat3(int index)
         {
-            float x = (float)(index & 1023) / 1023.0f;
-            float y = (float)((index >> 10) & 1023) / 1023.0f;
-            float z = (float)((index >> 20) & 511) / 511.0f;
+            float x = (index & 1023) / 1023.0f;
+            float y = (index >> 10 & 1023) / 1023.0f;
+            float z = (index >> 20 & 511) / 511.0f;
             return new Vector3(x, y, z);
         }
 
@@ -2679,4 +2755,3 @@ namespace Toolbox.Math
         }
     }
 }
- 
