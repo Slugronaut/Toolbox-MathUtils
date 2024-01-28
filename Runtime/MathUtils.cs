@@ -2448,24 +2448,6 @@ namespace Peg.Lib
         public float Weight = 1;
     }
 
-    /// <summary>
-    /// A float value with a weight.
-    /// </summary>
-    [Serializable]
-    public class WeightedFloat : WeightedValue<float> { }
-
-    /// <summary>
-    /// A float value with a weight.
-    /// </summary>
-    [Serializable]
-    public class WeightedInt : WeightedValue<int> { }
-
-    /// <summary>
-    /// A float value with a weight.
-    /// </summary>
-    [Serializable]
-    public class WeightedString : WeightedValue<string> { }
-
 
     /// <summary>
     /// Provides additional functionality to collections of weighted values.
@@ -2536,6 +2518,25 @@ namespace Peg.Lib
             throw new UnityException("Weights not calculated correctly. Total: " + weightTotal + "  Random:  " + r + "  Final Tally: " + tally);
         }
     }
+
+
+    /// <summary>
+    /// A float value with a weight.
+    /// </summary>
+    [Serializable]
+    public class WeightedFloat : WeightedValue<float> { }
+
+    /// <summary>
+    /// A float value with a weight.
+    /// </summary>
+    [Serializable]
+    public class WeightedInt : WeightedValue<int> { }
+
+    /// <summary>
+    /// A float value with a weight.
+    /// </summary>
+    [Serializable]
+    public class WeightedString : WeightedValue<string> { }
 
 
     /// <summary>
