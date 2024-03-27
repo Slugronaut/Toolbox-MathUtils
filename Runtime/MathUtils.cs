@@ -823,7 +823,7 @@ namespace Peg.Lib
         }
 
         /// <summary>
-        /// Offsets a vector in forward-space: x-axis is always left/right,
+        /// Offsets a vector in aim-space: x-axis is always left/right,
         /// y-axis is always up/down, and z-axis is always forward/back
         /// relative to 'dir'.
         /// </summary>
@@ -832,6 +832,23 @@ namespace Peg.Lib
         /// <param name="offset"></param>
         /// <returns></returns>
         public static Vector3 ForwardSpaceOffset(Vector3 pos, Vector3 dir, Vector3 offset)
+        {
+            return pos + Vector3.Cross(dir, new Vector3(0, -offset.x, 0)) +
+                    new Vector3(0, offset.y, 0) +
+                    dir * offset.z;
+        }
+
+        /// <summary>
+        /// Offsets a vector in aim-space: x-axis is always left/right,
+        /// y-axis is always up/down, and z-axis is always forward/back
+        /// relative to 'dir'.
+        /// Exactly the same as ForwardSpaceOffset just with proper terminology for the name.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="dir"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public static Vector3 AimSpaceOffset(Vector3 pos, Vector3 dir, Vector3 offset)
         {
             return pos + Vector3.Cross(dir, new Vector3(0, -offset.x, 0)) +
                     new Vector3(0, offset.y, 0) +
